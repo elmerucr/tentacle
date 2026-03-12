@@ -1,0 +1,21 @@
+Sections:
+00: "org0001:0" (0-10)
+
+
+Source: "rom.s"
+                            	     1: ;		.org	0x0008000
+                            	     2: 
+                            	     3: start:
+00:00000000 08201FE5        	     4:         ldr     R2,=0xdeadbeef
+00:00000004 0210A0E1        	     5:         mov     R1,R2
+00:00000008 FCFFFFEA        	     6:         b       start
+                            	     7: 
+00:0000000C EFBEADDE        	     8: 		.ltorg
+                            	     9: 
+
+
+Symbols by name:
+start                            A:00000000
+
+Symbols by value:
+00000000 start
