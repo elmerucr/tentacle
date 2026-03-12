@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Work in Progress. ARM2 emulation written in c.
+Work in Progress. ARM2 emulation written in C.
 
 ## Links
 
