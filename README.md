@@ -1,5 +1,7 @@
 # tentacle
 
+![icon](./docs/tentacle_80x80.png)
+
 ## Introduction
 
 Work in Progress. ARM2 emulation written in C.
