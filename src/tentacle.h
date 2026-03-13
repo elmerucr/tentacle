@@ -27,11 +27,17 @@ typedef struct {
 
 	// pipeline
 	// "empty pipeline" means "don't do anything for 1 / 2 cycles with stuff that gets into execution"
-	// does wait also happen on a reset?
-	uint8_t wait;
+	// does "idle" also happen on a reset?
+	uint8_t idle;
+
+	bool fetch_valid;
+	bool decode_valid;
+	bool execute_valid;
+
 	uint32_t fetch;
 	uint32_t decode;
 	uint32_t execute;
+
 } tentacle_t;
 
 tentacle_t *tentacle_new();
