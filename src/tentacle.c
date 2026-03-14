@@ -40,50 +40,48 @@ void tentacle_destroy(tentacle_t *t)
 
 void tentacle_reset(tentacle_t *t)
 {
-	// NZCVIF'ProgramCounter'M1:M0
-	t->reg[R15] = 0b000011'000000000000000000000000'11; // 0x0c000003 in hex
+	t->reg[R15] = 0x0c000003;
+    // 0b000011'000000000000000000000000'11 in binary, NZCVIF'ProgramCounter'M1:M0
 	// I and F bits set to prevent interrupts, processor in SVC mode (supervisor)
+    // all other registers are undefined
 
 	t->execute_valid = false;
 	t->decode_valid = false;
 	t->fetch_valid = false;
 
-	t->idle = 4;
+	//t->idle = 4;
 }
 
 void tentacle_tick(tentacle_t *t)
 {
-	if (t->idle) {
-		t->idle--;
-		return;
-	}
+	// if (t->idle) {
+	// 	t->idle--;
+	// 	return;
+	// }
 
-	/*
-	 * Execute
-	 */
+	// Fetch (always happens, and then immediately increases pc)
+	uint32_t pc = t->reg[15] & 0x03fffffc;
+	uint32_t fetch = t->r32(pc);
+	t->reg[R15] = (t->reg[R15] & 0xfc000003) | ((pc + 4) & 0x03fffffc); // Immediately increase pc (R15)
+	printf("pc: %08x fetched:%08x\n", pc, fetch); // HACK!
+
+	// Decode
+	if (t->decode_valid) {
+        // yes, decode... does this actually do something in an emulator?
+    }
+
+	// Execute
 	if (t->execute_valid) {
 		// execute t->decode
 		// if b or bl, invalidate decode and fetch
 	}
+
 	t->execute = t->decode;
 	t->execute_valid = t->decode_valid;
 
-	/*
-	 * Decode
-	 */
-	t->decode = t->fetch;
-	t->decode_valid = t->fetch_valid;
+    t->decode = t->fetch;
+    t->decode_valid = t->fetch_valid;
 
-	/*
-	 * Fetch
-	 */
-	uint32_t pc = t->reg[15] & 0x03fffffc;
-	t->fetch = t->r32(pc);
-	t->fetch_valid = true;
-
-	// Increase pc (R15)
-	t->reg[R15] =	(t->reg[R15] & 0b111111'00000000'00000000'00000000'11) |
-					((pc + 4) & 0x03fffffc);
-
-	printf("%08x\n", t->fetch); // hack
+    t->fetch = fetch;
+    t->fetch_valid = true;
 }

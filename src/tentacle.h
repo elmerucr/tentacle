@@ -7,6 +7,10 @@
 extern "C" {
 #endif
 
+#define TENTACLE_MAJOR_VERSION  0
+#define TENTACLE_MINOR_VERSION  0
+#define TENTACLE_RELEASE_DATE   20260314
+
 typedef uint8_t (*tentacle_read8)(uint32_t addr);
 typedef uint32_t (*tentacle_read32)(uint32_t addr);
 typedef void(*tentacle_write8)(uint32_t address, uint8_t value);
@@ -30,10 +34,7 @@ enum register_names {
 typedef struct {
 	uint32_t reg[27];
 
-	// pipeline
-	// "empty pipeline" means "don't do anything for 1 / 2 cycles with stuff that gets into execution"
-	// does "idle" also happen on a reset?
-	uint8_t idle;
+	//uint8_t idle;
 
 	bool fetch_valid;
 	bool decode_valid;

@@ -17,19 +17,12 @@ int main()
 	tentacle_t *cpu = tentacle_new(read8, read32, write8, write32);
 
 	write32(0, 0xdeadbeef);
+    write32(4, 0x01020304);
 	tentacle_reset(cpu);
 
-	printf("%02x\n", read8(0));
-	printf("%02x\n", read8(1));
-	printf("%02x\n", read8(2));
-	printf("%02x\n", read8(3));
-
-	tentacle_tick(cpu);
-	tentacle_tick(cpu);
-	tentacle_tick(cpu);
-	tentacle_tick(cpu);
-	tentacle_tick(cpu);
-	tentacle_tick(cpu);
+    for (int i=0; i<4; i++) {
+	    tentacle_tick(cpu);
+    }
 
 	tentacle_destroy(cpu);
 	free(ram);
