@@ -11,16 +11,17 @@ void write8(uint32_t address, uint8_t value);
 void write32(uint32_t address, uint32_t value);
 
 int main()
-{
+{ 
 	ram = (uint8_t *)malloc(0x4000000); // 64mb
 
 	tentacle_t *cpu = tentacle_new(read8, read32, write8, write32);
 
-	write32(0, 0xdeadbeef);
-    write32(4, 0x01020304);
+    write32(0, 0xeafffffe); // always, b, two instructions back
+	write32(4, 0xdeadbeef);
 	tentacle_reset(cpu);
 
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<10; i++) {
+        printf("cycle %2i:  ", i+1);
 	    tentacle_tick(cpu);
     }
 

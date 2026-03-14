@@ -59,29 +59,53 @@ void tentacle_tick(tentacle_t *t)
 	// 	return;
 	// }
 
-	// Fetch (always happens, and then immediately increases pc)
-	uint32_t pc = t->reg[15] & 0x03fffffc;
-	uint32_t fetch = t->r32(pc);
-	t->reg[R15] = (t->reg[R15] & 0xfc000003) | ((pc + 4) & 0x03fffffc); // Immediately increase pc (R15)
-	printf("pc: %08x fetched:%08x\n", pc, fetch); // HACK!
+	t->pc = t->reg[15] & 0x03fffffc;
+
+	// Fetch
+	t->fetch = t->r32(t->pc);
+    t->fetch_valid = true;
+	printf("pc:%08x  fetched:%08x  ", t->pc, t->fetch); // HACK!
 
 	// Decode
 	if (t->decode_valid) {
         // yes, decode... does this actually do something in an emulator?
+        printf("decode:%08x  ", t->decode);
+    } else {
+        printf("decode:--------  ");
     }
+
+    // reset branch check
+    t->branch = false;
 
 	// Execute
 	if (t->execute_valid) {
-		// execute t->decode
+        printf("execute: %08x\n", t->execute);
+        tentacle_execute(t);
 		// if b or bl, invalidate decode and fetch
-	}
+	} else {
+        printf("execute: --------\n");
+    }
 
+    // only if not branch instr!
+    if (t->branch == false) {
+	    t->reg[R15] = (t->reg[R15] & 0xfc000003) | ((t->pc + 4) & 0x03fffffc);
+    }
+
+    // Move everything in the pipeline
 	t->execute = t->decode;
 	t->execute_valid = t->decode_valid;
 
     t->decode = t->fetch;
     t->decode_valid = t->fetch_valid;
+}
 
-    t->fetch = fetch;
-    t->fetch_valid = true;
+void tentacle_execute(tentacle_t *t)
+{
+    if (((t->execute & 0x0e000000) >> 25) == 0b101) {
+        t->branch = true;
+        t->pc += ((t->execute & 0xffffff) << 2);
+	    t->reg[R15] = (t->reg[R15] & 0xfc000003) | (t->pc & 0x03fffffc);
+        t->fetch_valid = false;
+        t->decode_valid = false;
+    }
 }

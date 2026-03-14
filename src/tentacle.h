@@ -34,6 +34,9 @@ enum register_names {
 typedef struct {
 	uint32_t reg[27];
 
+    uint32_t pc;    // for convenience
+    bool branch;
+
 	//uint8_t idle;
 
 	bool fetch_valid;
@@ -55,6 +58,7 @@ tentacle_t *tentacle_new(tentacle_read8 tr8, tentacle_read32 tr32, tentacle_writ
 void tentacle_destroy(tentacle_t *t);
 void tentacle_reset(tentacle_t *t);
 void tentacle_tick(tentacle_t *t);
+void tentacle_execute(tentacle_t *t);
 
 #ifdef __cplusplus
 }
