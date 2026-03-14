@@ -7,6 +7,11 @@
 extern "C" {
 #endif
 
+typedef uint8_t (*tentacle_read8)(uint32_t addr);
+typedef uint32_t (*tentacle_read32)(uint32_t addr);
+typedef void(*tentacle_write8)(uint32_t address, uint8_t value);
+typedef void(*tentacle_write32)(uint32_t address, uint32_t value);
+
 // Page 5-2
 enum processor_modes {
 	USR_MODE = 0b00,
@@ -38,15 +43,20 @@ typedef struct {
 	uint32_t decode;
 	uint32_t execute;
 
+	tentacle_read8 r8;
+	tentacle_read32 r32;
+	tentacle_write8 w8;
+	tentacle_write32 w32;
+
 } tentacle_t;
 
-tentacle_t *tentacle_new();
+tentacle_t *tentacle_new(tentacle_read8 tr8, tentacle_read32 tr32, tentacle_write8 tw8, tentacle_write32 tw32);
 void tentacle_destroy(tentacle_t *t);
 void tentacle_reset(tentacle_t *t);
-void tentacle_step(tentacle_t *t);
+void tentacle_tick(tentacle_t *t);
 
 #ifdef __cplusplus
-{
+}
 #endif
 
 #endif
